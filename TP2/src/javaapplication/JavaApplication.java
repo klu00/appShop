@@ -10,6 +10,7 @@ package javaapplication;
  */
 public class JavaApplication {
     
+    //Allo
     private String id;
 
     /**
