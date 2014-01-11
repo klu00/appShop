@@ -9,6 +9,8 @@ package javaapplication;
  * @author Lucas
  */
 public class JavaApplication {
+    
+    private String id;
 
     /**
      * @param args the command line arguments
