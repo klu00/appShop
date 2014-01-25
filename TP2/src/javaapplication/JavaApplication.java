@@ -4,57 +4,89 @@
  */
 package javaapplication;
 
+import domain.Application;
 import domain.Member1;
+import domain.Platform;
+import domain.Sequence;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
 
 /**
  *
  * @author Lucas
  */
 public class JavaApplication {
-    
-  
-    public static void main(String[] args) {
-       //EntityManager bootstrap
-    EntityManagerFactory factory = Persistence.createEntityManagerFactory("TP2PU");
-    EntityManager em = factory.createEntityManager();
-    //Begin a transaction
-    em.getTransaction().begin();
-    //Create a POJO, it's out of the persistence context
-    Member1 m = new Member1(Integer.SIZE, "NomPers", "mail@test.fr", "PrenomPers", "test");
 
+    private EntityManagerFactory factory = Persistence.createEntityManagerFactory("TP2PU");
+    private EntityManager em = factory.createEntityManager();
+    private Logger LOGGER = Logger.getLogger("logger");
+
+    public static void main(String[] args) {
+        JavaApplication app = new JavaApplication();
+        app.addMember("toto1", "titi1", "toto1@titi.com", "tototiti1", "toto1");
+        app.addApplication("apptest", "1.0", app.getPlatform(""));
+        
+    }
     
-    try {
-        em.persist(m);
-        //Now the object is in the persistence context
-     //   LOGGER.log(Level.INFO, "The member id is now: {0}", m.getMemberId());
-        System.out.println("The member id is now: "+m.getMemberId());
+    private Platform getPlatform(String name) { 
+        //em.getTransaction().begin();
+        //CriteriaBuilder cb = em.getCriteriaBuilder().createQuery(Platform.class).;
+        //Platform p = em.createQuery("");
+        //return p;
+    }
+    
+     private void addApplication(String applicationName, String applicationVersion, Platform platform) {
+        em.getTransaction().begin();
+
+        Application app = new Application();
+        app.setApplicationName(applicationName);
+        app.setApplicationVersion(applicationVersion);
+        app.setApplicationPlatformId(platform);
+       
+        try {
+            em.persist(app);
         } catch (EntityExistsException e) {
-      //  LOGGER.log(Level.INFO, "The member already exists", m);            
-        System.out.println("The member already exists: "+m);
-        //We can manually rollback the transaction if we have a problem
-       // em.getTransaction().rollback();
+            LOGGER.log(Level.INFO, "The application already exists");
         }
+
         //Merge an object means synchronize the object instance with its DB representation
-        m = em.merge(m);
-      //  LOGGER.log(Level.INFO, "The member name is now: {0}", m.getMemberLastname());          
-        System.out.println("The member name is now: "+m.getMemberLastname());
-        //Remove the object from the persistence context, it doesn't mean the object is deleted from the memory
-        //em.remove(m);
-      //  LOGGER.log(Level.INFO, "The computer no longer exists in the DB");
-        //System.out.println("The member not exist in DB ");
+        app = em.merge(app);
+        LOGGER.log(Level.INFO, "The member name is now: {0}", app.getApplicationName());
+
         //Since we don't use a Java EE container, we have to manually handle the transaction
         em.getTransaction().commit();
         //Never ever forget to close the resources!!
-        em.close();
-        factory.close();
-     //   30
-        //The object isn't in the persistence context, but it still live
-     //   LOGGER.log(Level.INFO, "Hi, I am the computer {0} and I am detached of the persistence context", c.getModel());
-         System.out.println("Hi, I am the member "+m.getMemberUsername()+" and I am detached of the persistence context");
+    }
+
+    private void addMember(String lastname, String firstname, String username, String email, String password) {
+        em.getTransaction().begin();
+
+        Member1 m = new Member1();
+        m.setMemberLastname(lastname);
+        m.setMemberFirstname(firstname);
+        m.setMemberEmail(email);
+        m.setMemberUsername(username);
+        m.setMemberPassword(password);
+
+        try {
+            em.persist(m);
+            LOGGER.log(Level.INFO, "The member id is now: {0}", m.getMemberId());
+        } catch (EntityExistsException e) {
+            LOGGER.log(Level.INFO, "The member already exists", m);
+        }
+
+        //Merge an object means synchronize the object instance with its DB representation
+        m = em.merge(m);
+        LOGGER.log(Level.INFO, "The member name is now: {0}", m.getMemberLastname());
+
+        //Since we don't use a Java EE container, we have to manually handle the transaction
+        em.getTransaction().commit();
+        //Never ever forget to close the resources!!
     }
 }
