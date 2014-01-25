@@ -39,6 +39,7 @@ public class JavaApplication {
         //CriteriaBuilder cb = em.getCriteriaBuilder().createQuery(Platform.class).;
         //Platform p = em.createQuery("");
         //return p;
+        return null;
     }
     
      private void addApplication(String applicationName, String applicationVersion, Platform platform) {
