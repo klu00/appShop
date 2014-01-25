@@ -10,7 +10,7 @@
     <class>domain.Download</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/AppShopDB"/>
-      <property name="javax.persistence.jdbc.password" value="aupligot"/>
+      <property name="javax.persistence.jdbc.password" value="kBlock"/>
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
       <property name="javax.persistence.jdbc.user" value="app"/>
     </properties>
