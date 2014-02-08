@@ -6,6 +6,7 @@ package service;
 
 import domain.Administrator;
 import interfaces.AdministratorLocal;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ import javax.ejb.LocalBean;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceUnit;
+import javax.persistence.Query;
 
 /**
  *
@@ -27,9 +29,10 @@ public class AdministratorBean implements AdministratorLocal{
     private EntityManager em;
     
     private Logger LOGGER= Logger.getLogger("logger");
-    
+        
     @Override
     public void addAdministrator(Administrator administrator) {
+        System.out.println("Add Admin");
         em.getTransaction().begin();
         try {
             em.persist(administrator);
@@ -44,20 +47,21 @@ public class AdministratorBean implements AdministratorLocal{
     public void deleteAdministrator(Administrator administrator) {
         em.getTransaction().begin();
         try {
-            em.detach(administrator);
+            em.remove(administrator);
         } catch(Exception e) {
             LOGGER.log(Level.SEVERE, "Error suppressing administrator id="+administrator.getAdministratorUsername());
         }
     }
 
-    @Override
-    public List<Administrator> findAllAdministrator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+    public List<Administrator> findAllAdministrator() { 
+        Query query = em.createQuery("SELECT * FROM Administrator");
+        return (List<Administrator>) query.getResultList();
     }
 
     @Override
     public Administrator findAdministratorById(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return em.find(Administrator.class, id);
     }
 
     // Add business logic below. (Right-click in editor and choose
@@ -65,7 +69,10 @@ public class AdministratorBean implements AdministratorLocal{
 
     @Override
     public void updateAdministrator(Administrator administrator) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Administrator admin = findAdministratorById(administrator.getAdministratorId());
+        if (admin != null) {
+          admin = administrator;
+        }
     }
 
 }
